@@ -21,7 +21,13 @@ function checkIfInitialParamsExist(params) {
   return Object.keys(params).find(k => k.includes("initial"));
 };
 
-const storage = new UTMStorage();
+let storage = null;
+
+function createStorageIfNotCreated() {
+  if (!storage) {
+    storage = new UTMStorage()
+  }
+}
 
 class UTMParams {
   /**
@@ -30,6 +36,8 @@ class UTMParams {
    * @return {Object}
    */
   static parse() {
+    createStorageIfNotCreated();
+
     const urlSearch = new URL(window.location);
     const urlParams = new URLSearchParams(urlSearch.search);
     const parsedParams = {};
@@ -49,6 +57,8 @@ class UTMParams {
    * @return {Boolean}
    */
   static save(params) {
+    createStorageIfNotCreated();
+
     if (!params || !allowedParams.some(key => !!params[key])) {
       return false;
     }
@@ -96,6 +106,8 @@ class UTMParams {
    * @return {Object}
    */
   static get() {
+    createStorageIfNotCreated();
+
     const savedParams = storage.getItem("utmSavedParams");
     if (savedParams) {
       return JSON.parse(savedParams);
